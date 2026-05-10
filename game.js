@@ -23,7 +23,7 @@
     update: document.getElementById("updateButton")
   };
 
-  const APP_VERSION = "0.2.1";
+  const APP_VERSION = "0.2.2";
   const TAU = Math.PI * 2;
   const WORLD = { width: 1800, height: 1300 };
   const DAY_SECONDS = 76;
@@ -484,6 +484,8 @@
     const x = state.camp.x - camera.x;
     const y = state.camp.y - camera.y;
     const fire = state.camp.power / 100;
+    const warmthRadius = 350;
+    const repelRadius = 145 + state.camp.power * 1.25;
 
     ctx.save();
     ctx.globalAlpha = 0.16 + fire * 0.28;
@@ -494,6 +496,32 @@
     ctx.beginPath();
     ctx.arc(x, y, 230 + fire * 190, 0, TAU);
     ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalAlpha = 0.22 + fire * 0.18;
+    const range = ctx.createRadialGradient(x, y, repelRadius * 0.35, x, y, warmthRadius);
+    range.addColorStop(0, "rgba(250, 173, 72, 0.18)");
+    range.addColorStop(0.42, "rgba(239, 134, 58, 0.1)");
+    range.addColorStop(1, "rgba(239, 134, 58, 0)");
+    ctx.fillStyle = range;
+    ctx.beginPath();
+    ctx.arc(x, y, warmthRadius, 0, TAU);
+    ctx.fill();
+
+    ctx.setLineDash([12, 9]);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = `rgba(255, 206, 112, ${0.46 + fire * 0.24})`;
+    ctx.beginPath();
+    ctx.arc(x, y, warmthRadius, 0, TAU);
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = `rgba(255, 245, 190, ${0.34 + fire * 0.22})`;
+    ctx.beginPath();
+    ctx.arc(x, y, repelRadius, 0, TAU);
+    ctx.stroke();
     ctx.restore();
 
     ctx.strokeStyle = "#6a4a32";
