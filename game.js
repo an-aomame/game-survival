@@ -347,7 +347,7 @@
     state.result = message;
     draw();
     ui.message.textContent = message;
-    ui.start.textContent = message.includes("生き延びた") ? "Again" : "Retry";
+    ui.start.textContent = message.includes("生き延びた") ? "もう一度" : "再挑戦";
     ui.panel.hidden = false;
   }
 
@@ -573,7 +573,7 @@
 
   function updateUi() {
     const p = state.player;
-    ui.day.textContent = `Day ${dayNumber()}`;
+    ui.day.textContent = `${dayNumber()}日目`;
     ui.time.textContent = clockText();
     ui.health.value = Math.round(p.health);
     ui.food.value = Math.round(p.food);

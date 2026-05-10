@@ -4,51 +4,51 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
     <meta name="theme-color" content="#162019">
-    <title>Forest Three Nights</title>
+    <title>森の三日間</title>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <main class="game-shell" aria-label="Forest survival game">
-      <canvas id="game" aria-label="game field"></canvas>
+    <main class="game-shell" aria-label="森のサバイバルゲーム">
+      <canvas id="game" aria-label="ゲーム画面"></canvas>
 
-      <section class="hud hud-top" aria-label="status">
+      <section class="hud hud-top" aria-label="状態">
         <div class="day-pill">
-          <span id="dayLabel">Day 1</span>
+          <span id="dayLabel">1日目</span>
           <span id="timeLabel">06:00</span>
         </div>
-        <div class="meters" aria-label="player condition">
+        <div class="meters" aria-label="プレイヤーの状態">
           <label>
-            <span>HP</span>
+            <span>体力</span>
             <meter id="healthMeter" min="0" max="100" value="100"></meter>
           </label>
           <label>
-            <span>Food</span>
+            <span>空腹</span>
             <meter id="foodMeter" min="0" max="100" value="82"></meter>
           </label>
           <label>
-            <span>Heat</span>
+            <span>暖かさ</span>
             <meter id="heatMeter" min="0" max="100" value="55"></meter>
           </label>
         </div>
       </section>
 
-      <section class="hud hud-bottom" aria-label="actions">
-        <div class="inventory" aria-label="resources">
-          <span><b id="woodCount">0</b> Wood</span>
-          <span><b id="berryCount">0</b> Berry</span>
-          <span><b id="stoneCount">0</b> Stone</span>
+      <section class="hud hud-bottom" aria-label="操作">
+        <div class="inventory" aria-label="資源">
+          <span>木材 <b id="woodCount">0</b></span>
+          <span>ベリー <b id="berryCount">0</b></span>
+          <span>石 <b id="stoneCount">0</b></span>
         </div>
         <div class="actions">
-          <button id="gatherButton" type="button">Gather</button>
-          <button id="eatButton" type="button">Eat</button>
-          <button id="fireButton" type="button">Fire</button>
+          <button id="gatherButton" type="button">採取</button>
+          <button id="eatButton" type="button">食べる</button>
+          <button id="fireButton" type="button">焚き火</button>
         </div>
       </section>
 
       <section id="messagePanel" class="message-panel" aria-live="polite">
-        <h1>Forest Three Nights</h1>
+        <h1>森の三日間</h1>
         <p id="messageText">3日目の夜明けまで生き残れ。</p>
-        <button id="startButton" type="button">Start</button>
+        <button id="startButton" type="button">始める</button>
       </section>
     </main>
 
