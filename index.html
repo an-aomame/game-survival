@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
     <meta name="theme-color" content="#162019">
     <title>森の三日間</title>
-    <link rel="stylesheet" href="styles.css?v=0.2.2">
+    <link rel="stylesheet" href="styles.css?v=0.3.0">
   </head>
   <body>
     <main class="game-shell" aria-label="森のサバイバルゲーム">
@@ -37,17 +37,19 @@
           <span>木材 <b id="woodCount">0</b></span>
           <span>ベリー <b id="berryCount">0</b></span>
           <span>石 <b id="stoneCount">0</b></span>
+          <span>囲い <b id="wallCount">0</b>/3</span>
         </div>
         <div class="actions">
           <button id="gatherButton" type="button">採取</button>
           <button id="eatButton" type="button">食べる</button>
           <button id="fireButton" type="button">焚き火</button>
+          <button id="wallButton" type="button">囲い</button>
         </div>
       </section>
 
       <section id="messagePanel" class="message-panel" aria-live="polite">
         <h1>森の三日間</h1>
-        <p class="version-label" id="versionLabel">v0.2.2</p>
+        <p class="version-label" id="versionLabel">v0.3.0</p>
         <p id="messageText">3日目の夜明けまで生き残れ。</p>
         <div class="title-actions">
           <button id="startButton" type="button">始める</button>
@@ -56,6 +58,6 @@
       </section>
     </main>
 
-    <script src="game.js?v=0.2.2"></script>
+    <script src="game.js?v=0.3.0"></script>
   </body>
 </html>

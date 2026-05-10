@@ -13,9 +13,11 @@
     wood: document.getElementById("woodCount"),
     berries: document.getElementById("berryCount"),
     stones: document.getElementById("stoneCount"),
+    wallCount: document.getElementById("wallCount"),
     gather: document.getElementById("gatherButton"),
     eat: document.getElementById("eatButton"),
     fire: document.getElementById("fireButton"),
+    wall: document.getElementById("wallButton"),
     panel: document.getElementById("messagePanel"),
     version: document.getElementById("versionLabel"),
     message: document.getElementById("messageText"),
@@ -23,7 +25,7 @@
     update: document.getElementById("updateButton")
   };
 
-  const APP_VERSION = "0.2.2";
+  const APP_VERSION = "0.3.0";
   const TAU = Math.PI * 2;
   const WORLD = { width: 1800, height: 1300 };
   const DAY_SECONDS = 76;
@@ -59,7 +61,8 @@
       camp: {
         x: WORLD.width * 0.5 + 62,
         y: WORLD.height * 0.5 + 16,
-        power: 50
+        power: 50,
+        wallLevel: 0
       },
       resources: [],
       enemies: [],
@@ -215,7 +218,7 @@
     const p = state.player;
     for (let i = state.enemies.length - 1; i >= 0; i -= 1) {
       const e = state.enemies[i];
-      const nearFire = dist(e.x, e.y, state.camp.x, state.camp.y) < 145 + state.camp.power * 1.25;
+      const nearFire = dist(e.x, e.y, state.camp.x, state.camp.y) < getRepelRadius();
       const targetX = nearFire ? state.camp.x + (e.x - state.camp.x) * 2 : p.x;
       const targetY = nearFire ? state.camp.y + (e.y - state.camp.y) * 2 : p.y;
       const dx = targetX - e.x;
@@ -327,6 +330,23 @@
     p.heat = clamp(p.heat + 8, 0, 100);
     state.message = "火が強くなった。";
     burst(state.camp.x, state.camp.y, "fire");
+  }
+
+  function buildWall() {
+    const p = state.player;
+    const close = dist(p.x, p.y, state.camp.x, state.camp.y) < 136;
+    if (!running || !close || p.stones < 3 || state.camp.wallLevel >= 3) {
+      state.message = !close
+        ? "焚き火のそばで作る。"
+        : state.camp.wallLevel >= 3
+          ? "囲いはこれ以上広げられない。"
+          : "石が3個必要だ。";
+      return;
+    }
+    p.stones -= 3;
+    state.camp.wallLevel += 1;
+    state.message = `石の囲いを広げた。${state.camp.wallLevel}段階目。`;
+    burst(state.camp.x, state.camp.y, "stone");
   }
 
   function burst(x, y, type) {
@@ -485,7 +505,7 @@
     const y = state.camp.y - camera.y;
     const fire = state.camp.power / 100;
     const warmthRadius = 350;
-    const repelRadius = 145 + state.camp.power * 1.25;
+    const repelRadius = getRepelRadius();
 
     ctx.save();
     ctx.globalAlpha = 0.16 + fire * 0.28;
@@ -534,6 +554,10 @@
     ctx.lineTo(x - 24, y - 8);
     ctx.stroke();
 
+    if (state.camp.wallLevel > 0) {
+      drawStoneWall(x, y, repelRadius);
+    }
+
     if (fire > 0.04) {
       ctx.fillStyle = "#f7c45f";
       ctx.beginPath();
@@ -548,6 +572,23 @@
       ctx.quadraticCurveTo(x - 12, y, x, y - 22 - fire * 8);
       ctx.fill();
     }
+  }
+
+  function drawStoneWall(x, y, repelRadius) {
+    const stones = 10 + state.camp.wallLevel * 5;
+    const radius = repelRadius - 12;
+    ctx.save();
+    for (let i = 0; i < stones; i += 1) {
+      const angle = (i / stones) * TAU + state.camp.wallLevel * 0.13;
+      const jitter = Math.sin(i * 2.41) * 5;
+      const sx = x + Math.cos(angle) * (radius + jitter);
+      const sy = y + Math.sin(angle) * (radius + jitter);
+      ctx.fillStyle = i % 2 === 0 ? "#b9c2bd" : "#89978f";
+      ctx.beginPath();
+      ctx.ellipse(sx, sy, 8, 5, angle, 0, TAU);
+      ctx.fill();
+    }
+    ctx.restore();
   }
 
   function drawEnemies(camera) {
@@ -628,9 +669,15 @@
     ui.wood.textContent = p.wood;
     ui.berries.textContent = p.berries;
     ui.stones.textContent = p.stones;
+    ui.wallCount.textContent = state.camp.wallLevel;
     ui.eat.disabled = p.berries <= 0 || p.food >= 96 || !running;
     ui.fire.disabled = p.wood <= 0 || dist(p.x, p.y, state.camp.x, state.camp.y) >= 116 || !running;
+    ui.wall.disabled = p.stones < 3 || state.camp.wallLevel >= 3 || dist(p.x, p.y, state.camp.x, state.camp.y) >= 136 || !running;
     ui.gather.disabled = !running;
+  }
+
+  function getRepelRadius() {
+    return 145 + state.camp.power * 1.25 + state.camp.wallLevel * 48;
   }
 
   function setTargetFromEvent(event) {
@@ -723,6 +770,7 @@
   ui.gather.addEventListener("click", gather);
   ui.eat.addEventListener("click", eat);
   ui.fire.addEventListener("click", feedFire);
+  ui.wall.addEventListener("click", buildWall);
   ui.start.addEventListener("click", resetGame);
   ui.update.addEventListener("click", reloadLatest);
 
