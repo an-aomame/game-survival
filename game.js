@@ -23,7 +23,7 @@
     update: document.getElementById("updateButton")
   };
 
-  const APP_VERSION = "0.2.0";
+  const APP_VERSION = "0.2.1";
   const TAU = Math.PI * 2;
   const WORLD = { width: 1800, height: 1300 };
   const DAY_SECONDS = 76;
@@ -360,6 +360,16 @@
     window.location.replace(url.toString());
   }
 
+  function preventPageZoom(event) {
+    event.preventDefault();
+  }
+
+  function preventMultiTouch(event) {
+    if (event.touches && event.touches.length > 1) {
+      event.preventDefault();
+    }
+  }
+
   function draw() {
     const camera = getCamera();
     ctx.save();
@@ -668,11 +678,20 @@
   }
 
   window.addEventListener("resize", resize);
+  window.addEventListener("gesturestart", preventPageZoom, { passive: false });
+  window.addEventListener("gesturechange", preventPageZoom, { passive: false });
+  window.addEventListener("gestureend", preventPageZoom, { passive: false });
+  window.addEventListener("touchmove", preventMultiTouch, { passive: false });
+  window.addEventListener("dblclick", preventPageZoom, { passive: false });
   canvas.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
     canvas.setPointerCapture(event.pointerId);
     setTargetFromEvent(event);
   });
-  canvas.addEventListener("pointermove", setTargetFromEvent);
+  canvas.addEventListener("pointermove", (event) => {
+    event.preventDefault();
+    setTargetFromEvent(event);
+  });
   ui.gather.addEventListener("click", gather);
   ui.eat.addEventListener("click", eat);
   ui.fire.addEventListener("click", feedFire);
