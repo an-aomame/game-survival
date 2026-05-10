@@ -17,10 +17,13 @@
     eat: document.getElementById("eatButton"),
     fire: document.getElementById("fireButton"),
     panel: document.getElementById("messagePanel"),
+    version: document.getElementById("versionLabel"),
     message: document.getElementById("messageText"),
-    start: document.getElementById("startButton")
+    start: document.getElementById("startButton"),
+    update: document.getElementById("updateButton")
   };
 
+  const APP_VERSION = "0.2.0";
   const TAU = Math.PI * 2;
   const WORLD = { width: 1800, height: 1300 };
   const DAY_SECONDS = 76;
@@ -351,6 +354,12 @@
     ui.panel.hidden = false;
   }
 
+  function reloadLatest() {
+    const url = new URL(window.location.href);
+    url.searchParams.set("update", Date.now().toString());
+    window.location.replace(url.toString());
+  }
+
   function draw() {
     const camera = getCamera();
     ctx.save();
@@ -668,8 +677,10 @@
   ui.eat.addEventListener("click", eat);
   ui.fire.addEventListener("click", feedFire);
   ui.start.addEventListener("click", resetGame);
+  ui.update.addEventListener("click", reloadLatest);
 
   resize();
+  ui.version.textContent = `v${APP_VERSION}`;
   state.resources = createResources();
   draw();
 }());

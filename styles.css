@@ -200,7 +200,7 @@ meter::-webkit-meter-bar {
 }
 
 .message-panel h1 {
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   font-size: clamp(28px, 7vw, 46px);
   line-height: 1;
   letter-spacing: 0;
@@ -212,11 +212,29 @@ meter::-webkit-meter-bar {
   font-weight: 700;
 }
 
+.message-panel .version-label {
+  margin: 0 0 12px;
+  color: #bac9bd;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.title-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
 .message-panel button {
   min-width: 132px;
   background: #d57f35;
   color: #15120e;
   border-color: rgba(255, 255, 255, 0.24);
+}
+
+.message-panel .secondary-button {
+  background: rgba(24, 33, 29, 0.86);
+  color: #fff7e7;
 }
 
 @media (max-width: 680px) {
