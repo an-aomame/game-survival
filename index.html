@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
     <meta name="theme-color" content="#162019">
     <title>森の三日間</title>
-    <link rel="stylesheet" href="styles.css?v=0.3.0">
+    <link rel="stylesheet" href="styles.css?v=0.3.1">
   </head>
   <body>
     <main class="game-shell" aria-label="森のサバイバルゲーム">
@@ -30,6 +30,7 @@
             <meter id="heatMeter" min="0" max="100" value="55"></meter>
           </label>
         </div>
+        <button id="helpButton" class="help-button" type="button" aria-label="博士のヘルプ">?</button>
       </section>
 
       <section class="hud hud-bottom" aria-label="操作">
@@ -49,15 +50,47 @@
 
       <section id="messagePanel" class="message-panel" aria-live="polite">
         <h1>森の三日間</h1>
-        <p class="version-label" id="versionLabel">v0.3.0</p>
+        <p class="version-label" id="versionLabel">v0.3.1</p>
         <p id="messageText">3日目の夜明けまで生き残れ。</p>
         <div class="title-actions">
           <button id="startButton" type="button">始める</button>
+          <button id="titleHelpButton" class="secondary-button" type="button">博士のヘルプ</button>
           <button id="updateButton" class="secondary-button" type="button">最新版に更新</button>
+        </div>
+      </section>
+
+      <section id="helpPanel" class="help-panel" aria-label="博士のヘルプ" hidden>
+        <div class="help-card">
+          <div class="professor">
+            <div class="professor-face" aria-hidden="true">博</div>
+            <div>
+              <h2>博士のサバイバル講座</h2>
+              <p>ほっほう。3日目の夜明けまで生きのびれば勝ちじゃ。</p>
+            </div>
+          </div>
+          <div class="help-grid">
+            <article>
+              <h3>昼にやること</h3>
+              <p>森をタップして歩き、木材・ベリー・石の近くで採取じゃ。夜になる前に焚き火へ戻るのが大事じゃぞ。</p>
+            </article>
+            <article>
+              <h3>夜に気をつけること</h3>
+              <p>夜は敵が出る。体力は敵に触れたとき、空腹が0のとき、暖かさが0のときに減るのじゃ。</p>
+            </article>
+            <article>
+              <h3>焚き火と囲い</h3>
+              <p>木材で火を強くすると暖かい。石3個で囲いを作ると、敵よけの内側リングが広がるぞい。</p>
+            </article>
+            <article>
+              <h3>博士のコツ</h3>
+              <p>昼はベリーを2つ以上、木材を2つ以上、石を3つ集めるのじゃ。夜は点線の中で火を守ると安心じゃ。</p>
+            </article>
+          </div>
+          <button id="closeHelpButton" type="button">わかった</button>
         </div>
       </section>
     </main>
 
-    <script src="game.js?v=0.3.0"></script>
+    <script src="game.js?v=0.3.1"></script>
   </body>
 </html>

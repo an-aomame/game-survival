@@ -19,13 +19,17 @@
     fire: document.getElementById("fireButton"),
     wall: document.getElementById("wallButton"),
     panel: document.getElementById("messagePanel"),
+    helpPanel: document.getElementById("helpPanel"),
     version: document.getElementById("versionLabel"),
     message: document.getElementById("messageText"),
     start: document.getElementById("startButton"),
+    help: document.getElementById("helpButton"),
+    titleHelp: document.getElementById("titleHelpButton"),
+    closeHelp: document.getElementById("closeHelpButton"),
     update: document.getElementById("updateButton")
   };
 
-  const APP_VERSION = "0.3.0";
+  const APP_VERSION = "0.3.1";
   const TAU = Math.PI * 2;
   const WORLD = { width: 1800, height: 1300 };
   const DAY_SECONDS = 76;
@@ -378,6 +382,14 @@
     const url = new URL(window.location.href);
     url.searchParams.set("update", Date.now().toString());
     window.location.replace(url.toString());
+  }
+
+  function openHelp() {
+    ui.helpPanel.hidden = false;
+  }
+
+  function closeHelp() {
+    ui.helpPanel.hidden = true;
   }
 
   function preventPageZoom(event) {
@@ -772,6 +784,9 @@
   ui.fire.addEventListener("click", feedFire);
   ui.wall.addEventListener("click", buildWall);
   ui.start.addEventListener("click", resetGame);
+  ui.help.addEventListener("click", openHelp);
+  ui.titleHelp.addEventListener("click", openHelp);
+  ui.closeHelp.addEventListener("click", closeHelp);
   ui.update.addEventListener("click", reloadLatest);
 
   resize();
