@@ -1,0 +1,252 @@
+:root {
+  color-scheme: dark;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #0f1512;
+  color: #f6f0df;
+  touch-action: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  min-height: 100dvh;
+  background: #0f1512;
+}
+
+button {
+  min-width: 82px;
+  min-height: 48px;
+  border: 1px solid rgba(246, 240, 223, 0.24);
+  border-radius: 8px;
+  background: rgba(24, 33, 29, 0.86);
+  color: #fff7e7;
+  font: 700 15px/1 system-ui, sans-serif;
+  letter-spacing: 0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:active {
+  transform: translateY(1px) scale(0.99);
+  background: rgba(47, 65, 54, 0.95);
+}
+
+button:disabled {
+  opacity: 0.42;
+  transform: none;
+}
+
+.game-shell {
+  position: relative;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  background: #142018;
+}
+
+#game {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.hud {
+  position: absolute;
+  z-index: 2;
+  left: max(14px, env(safe-area-inset-left));
+  right: max(14px, env(safe-area-inset-right));
+  pointer-events: none;
+}
+
+.hud-top {
+  top: max(12px, env(safe-area-inset-top));
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.hud-bottom {
+  bottom: max(14px, env(safe-area-inset-bottom));
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.day-pill,
+.meters,
+.inventory {
+  border: 1px solid rgba(248, 237, 209, 0.2);
+  border-radius: 8px;
+  background: rgba(13, 19, 17, 0.64);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+}
+
+.day-pill {
+  display: grid;
+  gap: 2px;
+  min-width: 88px;
+  padding: 10px 12px;
+  font-weight: 800;
+}
+
+.day-pill span:last-child {
+  color: #cfd8d0;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.meters {
+  display: grid;
+  gap: 7px;
+  width: min(260px, 50vw);
+  padding: 10px;
+}
+
+.meters label {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  align-items: center;
+  gap: 7px;
+  color: #f8f0d9;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+meter {
+  width: 100%;
+  height: 10px;
+}
+
+meter::-webkit-meter-bar {
+  border: 0;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+#healthMeter::-webkit-meter-optimum-value {
+  border-radius: 99px;
+  background: #e35d52;
+}
+
+#foodMeter::-webkit-meter-optimum-value {
+  border-radius: 99px;
+  background: #e3b84f;
+}
+
+#heatMeter::-webkit-meter-optimum-value {
+  border-radius: 99px;
+  background: #ec7d3f;
+}
+
+.inventory {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 42vw;
+  padding: 10px;
+  color: #f4ead2;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.inventory span {
+  white-space: nowrap;
+}
+
+.inventory b {
+  color: #fff;
+  font-size: 16px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.message-panel {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 50%;
+  width: min(420px, calc(100vw - 32px));
+  padding: 22px;
+  border: 1px solid rgba(249, 234, 196, 0.28);
+  border-radius: 8px;
+  background: rgba(12, 18, 16, 0.84);
+  color: #fff7e5;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.48);
+  backdrop-filter: blur(18px);
+}
+
+.message-panel[hidden] {
+  display: none;
+}
+
+.message-panel h1 {
+  margin: 0 0 10px;
+  font-size: clamp(28px, 7vw, 46px);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.message-panel p {
+  margin: 0 0 18px;
+  color: #e8ddc2;
+  font-weight: 700;
+}
+
+.message-panel button {
+  min-width: 132px;
+  background: #d57f35;
+  color: #15120e;
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+@media (max-width: 680px) {
+  .hud-top,
+  .hud-bottom {
+    align-items: stretch;
+  }
+
+  .hud-top {
+    flex-direction: column;
+  }
+
+  .meters,
+  .inventory {
+    width: 100%;
+    max-width: none;
+  }
+
+  .hud-bottom {
+    flex-direction: column;
+  }
+
+  .actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  button {
+    min-width: 0;
+    width: 100%;
+  }
+}

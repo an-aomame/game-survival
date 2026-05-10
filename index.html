@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+    <meta name="theme-color" content="#162019">
+    <title>Forest Three Nights</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="game-shell" aria-label="Forest survival game">
+      <canvas id="game" aria-label="game field"></canvas>
+
+      <section class="hud hud-top" aria-label="status">
+        <div class="day-pill">
+          <span id="dayLabel">Day 1</span>
+          <span id="timeLabel">06:00</span>
+        </div>
+        <div class="meters" aria-label="player condition">
+          <label>
+            <span>HP</span>
+            <meter id="healthMeter" min="0" max="100" value="100"></meter>
+          </label>
+          <label>
+            <span>Food</span>
+            <meter id="foodMeter" min="0" max="100" value="82"></meter>
+          </label>
+          <label>
+            <span>Heat</span>
+            <meter id="heatMeter" min="0" max="100" value="55"></meter>
+          </label>
+        </div>
+      </section>
+
+      <section class="hud hud-bottom" aria-label="actions">
+        <div class="inventory" aria-label="resources">
+          <span><b id="woodCount">0</b> Wood</span>
+          <span><b id="berryCount">0</b> Berry</span>
+          <span><b id="stoneCount">0</b> Stone</span>
+        </div>
+        <div class="actions">
+          <button id="gatherButton" type="button">Gather</button>
+          <button id="eatButton" type="button">Eat</button>
+          <button id="fireButton" type="button">Fire</button>
+        </div>
+      </section>
+
+      <section id="messagePanel" class="message-panel" aria-live="polite">
+        <h1>Forest Three Nights</h1>
+        <p id="messageText">3日目の夜明けまで生き残れ。</p>
+        <button id="startButton" type="button">Start</button>
+      </section>
+    </main>
+
+    <script src="game.js"></script>
+  </body>
+</html>
