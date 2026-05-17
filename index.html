@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
     <meta name="theme-color" content="#162019">
     <title>森の三日間</title>
-    <link rel="stylesheet" href="styles.css?v=0.5.2">
+    <link rel="stylesheet" href="styles.css?v=0.6.0">
   </head>
   <body>
     <main class="game-shell" aria-label="森のサバイバルゲーム">
@@ -41,6 +41,7 @@
           <span>囲い <b id="wallCount">0</b>/3</span>
           <span>コイン <b id="coinCount">0</b></span>
           <span>武器 <b id="weaponName">なし</b></span>
+          <span>クラス <b id="className">旅人</b></span>
         </div>
         <div class="actions">
           <button id="gatherButton" type="button">採取</button>
@@ -48,6 +49,7 @@
           <button id="fireButton" type="button">焚き火</button>
           <button id="wallButton" type="button">囲い</button>
           <button id="attackButton" type="button">攻撃</button>
+          <button id="menuButton" type="button">メニュー</button>
         </div>
       </section>
 
@@ -58,10 +60,11 @@
 
       <section id="messagePanel" class="message-panel" aria-live="polite">
         <h1>森の三日間</h1>
-        <p class="version-label" id="versionLabel">v0.5.2</p>
+        <p class="version-label" id="versionLabel">v0.6.0</p>
         <p id="messageText">10日目の夜明けまで生き残れ。</p>
         <div class="title-actions">
           <button id="startButton" type="button">始める</button>
+          <button id="titleMenuButton" class="secondary-button" type="button">クラス</button>
           <button id="titleHelpButton" class="secondary-button" type="button">博士のヘルプ</button>
           <button id="updateButton" class="secondary-button" type="button">最新版に更新</button>
         </div>
@@ -86,6 +89,10 @@
               <p>木材や石を集めるとクエストが進む。達成するとコインがもらえるぞい。コインはあとで使えるようになる予定じゃ。</p>
             </article>
             <article>
+              <h3>クラス</h3>
+              <p>コインでクラスを買えるぞい。戦士は剣、宝探しは宝箱、採集家はベリーが得意じゃ。メニューから変更できるぞ。</p>
+            </article>
+            <article>
               <h3>夜に気をつけること</h3>
               <p>夜は敵が出る。体力は敵に触れたとき、空腹が0のとき、暖かさが0のときに減るのじゃ。</p>
             </article>
@@ -105,8 +112,22 @@
           <button id="closeHelpButton" type="button">わかった</button>
         </div>
       </section>
+
+      <section id="menuPanel" class="menu-panel" aria-label="クラスメニュー" hidden>
+        <div class="menu-card">
+          <div class="menu-heading">
+            <div>
+              <h2>クラス</h2>
+              <p>コインで購入して、プレイスタイルを変えよう。</p>
+            </div>
+            <div class="menu-coins">コイン <b id="menuCoinCount">0</b></div>
+          </div>
+          <div id="classList" class="class-list"></div>
+          <button id="closeMenuButton" type="button">閉じる</button>
+        </div>
+      </section>
     </main>
 
-    <script src="game.js?v=0.5.2"></script>
+    <script src="game.js?v=0.6.0"></script>
   </body>
 </html>

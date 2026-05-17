@@ -16,24 +16,31 @@
     wallCount: document.getElementById("wallCount"),
     coins: document.getElementById("coinCount"),
     weapon: document.getElementById("weaponName"),
+    className: document.getElementById("className"),
     quests: document.getElementById("questList"),
     gather: document.getElementById("gatherButton"),
     eat: document.getElementById("eatButton"),
     fire: document.getElementById("fireButton"),
     wall: document.getElementById("wallButton"),
     attack: document.getElementById("attackButton"),
+    menu: document.getElementById("menuButton"),
     panel: document.getElementById("messagePanel"),
     helpPanel: document.getElementById("helpPanel"),
+    menuPanel: document.getElementById("menuPanel"),
+    classList: document.getElementById("classList"),
+    menuCoins: document.getElementById("menuCoinCount"),
     version: document.getElementById("versionLabel"),
     message: document.getElementById("messageText"),
     start: document.getElementById("startButton"),
+    titleMenu: document.getElementById("titleMenuButton"),
     help: document.getElementById("helpButton"),
     titleHelp: document.getElementById("titleHelpButton"),
+    closeMenu: document.getElementById("closeMenuButton"),
     closeHelp: document.getElementById("closeHelpButton"),
     update: document.getElementById("updateButton")
   };
 
-  const APP_VERSION = "0.5.2";
+  const APP_VERSION = "0.6.0";
   const SPRITES = {
     player: loadSprite("assets/3days-shujimkou.png"),
     enemy: loadSprite("assets/3days-bakemono.png")
@@ -43,6 +50,8 @@
   const DAY_SECONDS = 76;
   const WIN_DAY = 10;
   const COIN_KEY = "forest-three-nights-coins";
+  const CLASS_KEY = "forest-three-nights-class";
+  const UNLOCKED_CLASS_KEY = "forest-three-nights-unlocked-classes";
   const QUESTS = [
     { id: "wood", label: "木材を6個集める", target: 6, reward: 8 },
     { id: "berries", label: "ベリーを6個集める", target: 6, reward: 8 },
@@ -54,8 +63,16 @@
     sword: { name: "剣", range: 112, cooldown: 0.55, color: "#d9e5df" },
     gun: { name: "銃", range: 230, cooldown: 1.05, color: "#f0d46b" }
   };
+  const CLASSES = [
+    { id: "traveler", name: "旅人", cost: 0, description: "基本のクラス。クセがなく、いつも通りに始められる。" },
+    { id: "fighter", name: "戦士", cost: 30, description: "剣を持って始める。夜に敵へ反撃しやすい。" },
+    { id: "treasure", name: "宝探し", cost: 35, description: "宝箱が2つ多く出る。武器を見つけやすい。" },
+    { id: "gatherer", name: "採集家", cost: 25, description: "ベリーを5個持って始める。空腹に強い。" }
+  ];
 
   let coins = loadCoins();
+  let unlockedClasses = loadUnlockedClasses();
+  let currentClass = loadCurrentClass();
 
   let dpr = 1;
   let viewWidth = 1;
@@ -80,10 +97,10 @@
         food: 82,
         heat: 56,
         wood: 1,
-        berries: 1,
+        berries: 1 + (currentClass === "gatherer" ? 4 : 0),
         stones: 0,
         invulnerable: 0,
-        weapon: null,
+        weapon: currentClass === "fighter" ? "sword" : null,
         attackCooldown: 0
       },
       camp: {
@@ -101,6 +118,11 @@
         berries: 0,
         stone: 0,
         wall: 0
+      },
+      appliedClassBonuses: {
+        fighter: currentClass === "fighter",
+        treasure: currentClass === "treasure",
+        gatherer: currentClass === "gatherer"
       },
       completedQuests: {},
       nextSpawn: 0,
@@ -145,7 +167,8 @@
 
   function createChests() {
     const chests = [];
-    for (let i = 0; i < 3; i += 1) {
+    const count = currentClass === "treasure" ? 5 : 3;
+    for (let i = 0; i < count; i += 1) {
       const p = randomOpenPoint(180);
       chests.push({
         x: p.x,
@@ -529,6 +552,67 @@
     ui.helpPanel.hidden = true;
   }
 
+  function openMenu() {
+    renderClassList();
+    ui.menuPanel.hidden = false;
+  }
+
+  function closeMenu() {
+    ui.menuPanel.hidden = true;
+  }
+
+  function buyOrSelectClass(id) {
+    const classInfo = getClassInfo(id);
+    if (!classInfo) {
+      return;
+    }
+
+    if (!unlockedClasses[id]) {
+      if (coins < classInfo.cost) {
+        state.message = "コインが足りない。クエストで集めよう。";
+        renderClassList();
+        return;
+      }
+      coins -= classInfo.cost;
+      unlockedClasses[id] = true;
+      saveCoins();
+      saveUnlockedClasses();
+    }
+
+    currentClass = id;
+    saveCurrentClass();
+    applyClassBonusNow(id);
+    state.message = `${classInfo.name}に変更した。`;
+    renderClassList();
+    draw();
+  }
+
+  function applyClassBonusNow(id) {
+    if (!running || state.appliedClassBonuses[id]) {
+      return;
+    }
+
+    if (id === "fighter") {
+      state.player.weapon = "sword";
+      state.appliedClassBonuses[id] = true;
+    } else if (id === "gatherer") {
+      state.player.berries += 4;
+      state.appliedClassBonuses[id] = true;
+    } else if (id === "treasure") {
+      for (let i = 0; i < 2; i += 1) {
+        const p = randomOpenPoint(180);
+        state.chests.push({
+          x: p.x,
+          y: p.y,
+          r: 22,
+          opened: false,
+          weapon: ["axe", "sword", "gun"][Math.floor(Math.random() * 3)]
+        });
+      }
+      state.appliedClassBonuses[id] = true;
+    }
+  }
+
   function preventPageZoom(event) {
     event.preventDefault();
   }
@@ -882,6 +966,8 @@
     ui.wallCount.textContent = state.camp.wallLevel;
     ui.coins.textContent = coins;
     ui.weapon.textContent = p.weapon ? WEAPONS[p.weapon].name : "なし";
+    ui.className.textContent = getClassInfo(currentClass).name;
+    ui.menuCoins.textContent = coins;
     updateQuestList();
     ui.eat.disabled = p.berries <= 0 || p.food >= 96 || !running;
     ui.fire.disabled = p.wood <= 0 || dist(p.x, p.y, state.camp.x, state.camp.y) >= 116 || !running;
@@ -903,6 +989,32 @@
     }).join("");
   }
 
+  function renderClassList() {
+    ui.menuCoins.textContent = coins;
+    ui.classList.innerHTML = CLASSES.map((classInfo) => {
+      const unlocked = Boolean(unlockedClasses[classInfo.id]);
+      const active = currentClass === classInfo.id;
+      const buttonText = active ? "使用中" : unlocked ? "このクラスにする" : `${classInfo.cost}コインで購入`;
+      const disabled = active || (!unlocked && coins < classInfo.cost);
+      return `
+        <article class="class-card ${active ? "active" : ""}">
+          <h3>${classInfo.name}</h3>
+          <p>${classInfo.description}</p>
+          <p>${unlocked ? "購入済み" : `価格 ${classInfo.cost}コイン`}</p>
+          <button type="button" data-class-id="${classInfo.id}" ${disabled ? "disabled" : ""}>${buttonText}</button>
+        </article>
+      `;
+    }).join("");
+
+    for (const button of ui.classList.querySelectorAll("button[data-class-id]")) {
+      button.addEventListener("click", () => buyOrSelectClass(button.dataset.classId));
+    }
+  }
+
+  function getClassInfo(id) {
+    return CLASSES.find((classInfo) => classInfo.id === id) || CLASSES[0];
+  }
+
   function loadCoins() {
     try {
       const saved = Number.parseInt(window.localStorage.getItem(COIN_KEY) || "0", 10);
@@ -917,6 +1029,40 @@
       window.localStorage.setItem(COIN_KEY, String(coins));
     } catch (_error) {
       // 保存できない環境でも、今のプレイ中はコイン表示を続ける。
+    }
+  }
+
+  function loadUnlockedClasses() {
+    try {
+      const saved = JSON.parse(window.localStorage.getItem(UNLOCKED_CLASS_KEY) || "{}");
+      return { traveler: true, ...saved };
+    } catch (_error) {
+      return { traveler: true };
+    }
+  }
+
+  function saveUnlockedClasses() {
+    try {
+      window.localStorage.setItem(UNLOCKED_CLASS_KEY, JSON.stringify(unlockedClasses));
+    } catch (_error) {
+      // 保存できない環境でも、今のプレイ中は購入状態を保つ。
+    }
+  }
+
+  function loadCurrentClass() {
+    try {
+      const saved = window.localStorage.getItem(CLASS_KEY) || "traveler";
+      return unlockedClasses[saved] ? saved : "traveler";
+    } catch (_error) {
+      return "traveler";
+    }
+  }
+
+  function saveCurrentClass() {
+    try {
+      window.localStorage.setItem(CLASS_KEY, currentClass);
+    } catch (_error) {
+      // 保存できない環境でも、今のプレイ中は選択状態を保つ。
     }
   }
 
@@ -1012,9 +1158,12 @@
   ui.fire.addEventListener("click", feedFire);
   ui.wall.addEventListener("click", buildWall);
   ui.attack.addEventListener("click", attack);
+  ui.menu.addEventListener("click", openMenu);
   ui.start.addEventListener("click", resetGame);
+  ui.titleMenu.addEventListener("click", openMenu);
   ui.help.addEventListener("click", openHelp);
   ui.titleHelp.addEventListener("click", openHelp);
+  ui.closeMenu.addEventListener("click", closeMenu);
   ui.closeHelp.addEventListener("click", closeHelp);
   ui.update.addEventListener("click", reloadLatest);
 
@@ -1022,5 +1171,6 @@
   ui.version.textContent = `v${APP_VERSION}`;
   state.resources = createResources();
   state.chests = createChests();
+  renderClassList();
   draw();
 }());
