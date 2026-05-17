@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
     <meta name="theme-color" content="#162019">
     <title>森の三日間</title>
-    <link rel="stylesheet" href="styles.css?v=0.3.2">
+    <link rel="stylesheet" href="styles.css?v=0.4.0">
   </head>
   <body>
     <main class="game-shell" aria-label="森のサバイバルゲーム">
@@ -39,6 +39,7 @@
           <span>ベリー <b id="berryCount">0</b></span>
           <span>石 <b id="stoneCount">0</b></span>
           <span>囲い <b id="wallCount">0</b>/3</span>
+          <span>コイン <b id="coinCount">0</b></span>
         </div>
         <div class="actions">
           <button id="gatherButton" type="button">採取</button>
@@ -48,9 +49,14 @@
         </div>
       </section>
 
+      <section class="quest-panel" aria-label="クエスト">
+        <h2>クエスト</h2>
+        <ul id="questList"></ul>
+      </section>
+
       <section id="messagePanel" class="message-panel" aria-live="polite">
         <h1>森の三日間</h1>
-        <p class="version-label" id="versionLabel">v0.3.2</p>
+        <p class="version-label" id="versionLabel">v0.4.0</p>
         <p id="messageText">10日目の夜明けまで生き残れ。</p>
         <div class="title-actions">
           <button id="startButton" type="button">始める</button>
@@ -74,6 +80,10 @@
               <p>森をタップして歩き、木材・ベリー・石の近くで採取じゃ。夜になる前に焚き火へ戻るのが大事じゃぞ。</p>
             </article>
             <article>
+              <h3>クエスト</h3>
+              <p>木材や石を集めるとクエストが進む。達成するとコインがもらえるぞい。コインはあとで使えるようになる予定じゃ。</p>
+            </article>
+            <article>
               <h3>夜に気をつけること</h3>
               <p>夜は敵が出る。体力は敵に触れたとき、空腹が0のとき、暖かさが0のときに減るのじゃ。</p>
             </article>
@@ -91,6 +101,6 @@
       </section>
     </main>
 
-    <script src="game.js?v=0.3.2"></script>
+    <script src="game.js?v=0.4.0"></script>
   </body>
 </html>

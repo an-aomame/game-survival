@@ -180,6 +180,69 @@ meter::-webkit-meter-bar {
   font-size: 16px;
 }
 
+.quest-panel {
+  position: absolute;
+  z-index: 2;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(14px, env(safe-area-inset-right));
+  width: min(300px, 32vw);
+  padding: 10px;
+  border: 1px solid rgba(248, 237, 209, 0.2);
+  border-radius: 8px;
+  background: rgba(13, 19, 17, 0.64);
+  color: #f4ead2;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(12px);
+  pointer-events: none;
+}
+
+.quest-panel h2 {
+  margin: 0 0 8px;
+  color: #ffd387;
+  font-size: 14px;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.quest-panel ul {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.quest-panel li {
+  display: grid;
+  gap: 4px;
+  color: #f8f0d9;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.quest-panel .quest-done {
+  color: #9edc9a;
+}
+
+.quest-panel progress {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.quest-panel progress::-webkit-progress-bar {
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.quest-panel progress::-webkit-progress-value {
+  border-radius: 99px;
+  background: #77c77a;
+}
+
 .actions {
   display: flex;
   gap: 8px;
@@ -361,9 +424,16 @@ meter::-webkit-meter-bar {
   }
 
   .meters,
-  .inventory {
+  .inventory,
+  .quest-panel {
     width: 100%;
     max-width: none;
+  }
+
+  .quest-panel {
+    top: 156px;
+    left: max(14px, env(safe-area-inset-left));
+    right: max(14px, env(safe-area-inset-right));
   }
 
   .hud-bottom {

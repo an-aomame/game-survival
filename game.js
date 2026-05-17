@@ -14,6 +14,8 @@
     berries: document.getElementById("berryCount"),
     stones: document.getElementById("stoneCount"),
     wallCount: document.getElementById("wallCount"),
+    coins: document.getElementById("coinCount"),
+    quests: document.getElementById("questList"),
     gather: document.getElementById("gatherButton"),
     eat: document.getElementById("eatButton"),
     fire: document.getElementById("fireButton"),
@@ -29,11 +31,20 @@
     update: document.getElementById("updateButton")
   };
 
-  const APP_VERSION = "0.3.2";
+  const APP_VERSION = "0.4.0";
   const TAU = Math.PI * 2;
   const WORLD = { width: 1800, height: 1300 };
   const DAY_SECONDS = 76;
   const WIN_DAY = 10;
+  const COIN_KEY = "forest-three-nights-coins";
+  const QUESTS = [
+    { id: "wood", label: "木材を6個集める", target: 6, reward: 8 },
+    { id: "berries", label: "ベリーを6個集める", target: 6, reward: 8 },
+    { id: "stone", label: "石を5個集める", target: 5, reward: 10 },
+    { id: "wall", label: "囲いを1回作る", target: 1, reward: 12 }
+  ];
+
+  let coins = loadCoins();
 
   let dpr = 1;
   let viewWidth = 1;
@@ -71,6 +82,13 @@
       resources: [],
       enemies: [],
       particles: [],
+      questProgress: {
+        wood: 0,
+        berries: 0,
+        stone: 0,
+        wall: 0
+      },
+      completedQuests: {},
       nextSpawn: 0,
       shake: 0
     };
@@ -300,12 +318,15 @@
     if (closest.type === "wood") {
       p.wood += closest.amount;
       state.message = "薪を拾った。";
+      addQuestProgress("wood", closest.amount);
     } else if (closest.type === "berries") {
       p.berries += closest.amount;
       state.message = "ベリーを摘んだ。";
+      addQuestProgress("berries", closest.amount);
     } else {
       p.stones += closest.amount;
       state.message = "石を拾った。";
+      addQuestProgress("stone", closest.amount);
     }
     burst(closest.x, closest.y, closest.type);
   }
@@ -350,7 +371,25 @@
     p.stones -= 3;
     state.camp.wallLevel += 1;
     state.message = `石の囲いを広げた。${state.camp.wallLevel}段階目。`;
+    addQuestProgress("wall", 1);
     burst(state.camp.x, state.camp.y, "stone");
+  }
+
+  function addQuestProgress(id, amount) {
+    if (!state.questProgress[id]) {
+      state.questProgress[id] = 0;
+    }
+    state.questProgress[id] += amount;
+
+    const quest = QUESTS.find((item) => item.id === id);
+    if (!quest || state.completedQuests[id] || state.questProgress[id] < quest.target) {
+      return;
+    }
+
+    state.completedQuests[id] = true;
+    coins += quest.reward;
+    saveCoins();
+    state.message = `クエスト達成。${quest.reward}コイン手に入れた。`;
   }
 
   function burst(x, y, type) {
@@ -682,6 +721,8 @@
     ui.berries.textContent = p.berries;
     ui.stones.textContent = p.stones;
     ui.wallCount.textContent = state.camp.wallLevel;
+    ui.coins.textContent = coins;
+    updateQuestList();
     ui.eat.disabled = p.berries <= 0 || p.food >= 96 || !running;
     ui.fire.disabled = p.wood <= 0 || dist(p.x, p.y, state.camp.x, state.camp.y) >= 116 || !running;
     ui.wall.disabled = p.stones < 3 || state.camp.wallLevel >= 3 || dist(p.x, p.y, state.camp.x, state.camp.y) >= 136 || !running;
@@ -690,6 +731,32 @@
 
   function getRepelRadius() {
     return 145 + state.camp.power * 1.25 + state.camp.wallLevel * 48;
+  }
+
+  function updateQuestList() {
+    ui.quests.innerHTML = QUESTS.map((quest) => {
+      const value = clamp(state.questProgress[quest.id] || 0, 0, quest.target);
+      const done = state.completedQuests[quest.id];
+      const text = done ? `${quest.label} 達成 +${quest.reward}` : `${quest.label} ${value}/${quest.target}`;
+      return `<li class="${done ? "quest-done" : ""}"><span>${text}</span><progress max="${quest.target}" value="${value}"></progress></li>`;
+    }).join("");
+  }
+
+  function loadCoins() {
+    try {
+      const saved = Number.parseInt(window.localStorage.getItem(COIN_KEY) || "0", 10);
+      return Number.isFinite(saved) ? saved : 0;
+    } catch (_error) {
+      return 0;
+    }
+  }
+
+  function saveCoins() {
+    try {
+      window.localStorage.setItem(COIN_KEY, String(coins));
+    } catch (_error) {
+      // 保存できない環境でも、今のプレイ中はコイン表示を続ける。
+    }
   }
 
   function setTargetFromEvent(event) {
