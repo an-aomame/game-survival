@@ -29,11 +29,11 @@
     update: document.getElementById("updateButton")
   };
 
-  const APP_VERSION = "0.3.1";
+  const APP_VERSION = "0.3.2";
   const TAU = Math.PI * 2;
   const WORLD = { width: 1800, height: 1300 };
   const DAY_SECONDS = 76;
-  const WIN_DAY = 3;
+  const WIN_DAY = 10;
 
   let dpr = 1;
   let viewWidth = 1;
@@ -162,7 +162,7 @@
     if (p.health <= 0) {
       endGame("森に飲み込まれた。");
     } else if (dayNumber() >= WIN_DAY && dayProgress() >= 0.24) {
-      endGame("3日目の夜明けだ。生き延びた。");
+      endGame("10日目の夜明けだ。生き延びた。");
     }
   }
 
