@@ -164,7 +164,7 @@ meter::-webkit-meter-bar {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  max-width: 42vw;
+  max-width: 46vw;
   padding: 10px;
   color: #f4ead2;
   font-size: 13px;
@@ -245,6 +245,8 @@ meter::-webkit-meter-bar {
 
 .actions {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 8px;
   pointer-events: auto;
 }
@@ -494,6 +496,7 @@ meter::-webkit-meter-bar {
 
   .hud-top {
     flex-direction: column;
+    right: max(62px, env(safe-area-inset-right));
   }
 
   .meters,
@@ -503,26 +506,78 @@ meter::-webkit-meter-bar {
     max-width: none;
   }
 
+  .day-pill {
+    width: 82px;
+    min-width: 82px;
+    padding: 8px 10px;
+  }
+
+  .meters {
+    gap: 5px;
+    padding: 8px;
+  }
+
+  .meters label {
+    grid-template-columns: 44px 1fr;
+    font-size: 11px;
+  }
+
   .quest-panel {
-    top: 156px;
+    top: max(148px, calc(env(safe-area-inset-top) + 148px));
     left: max(14px, env(safe-area-inset-left));
     right: max(14px, env(safe-area-inset-right));
+    padding: 8px;
+    font-size: 11px;
+  }
+
+  .quest-panel h2 {
+    margin-bottom: 6px;
+    font-size: 12px;
+  }
+
+  .quest-panel ul {
+    gap: 5px;
+  }
+
+  .quest-panel li {
+    gap: 3px;
+    font-size: 10px;
+  }
+
+  .quest-panel progress {
+    height: 6px;
   }
 
   .hud-bottom {
     flex-direction: column;
+    gap: 8px;
+  }
+
+  .inventory {
+    gap: 6px 8px;
+    padding: 8px;
+    font-size: 11px;
+  }
+
+  .inventory b {
+    font-size: 13px;
   }
 
   .actions {
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
   }
 
   .help-button {
     position: absolute;
     top: 0;
-    right: 0;
+    right: calc(-48px - 8px);
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
   }
 
   .help-grid {
@@ -541,5 +596,57 @@ meter::-webkit-meter-bar {
   button {
     min-width: 0;
     width: 100%;
+    min-height: 42px;
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 900px) and (orientation: landscape) {
+  .hud-top {
+    max-width: 560px;
+    right: auto;
+  }
+
+  .quest-panel {
+    width: min(340px, 30vw);
+  }
+
+  .inventory {
+    max-width: 50vw;
+  }
+
+  .actions {
+    max-width: 540px;
+  }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  button {
+    min-height: 42px;
+    font-size: 12px;
+  }
+
+  .hud-top {
+    max-width: 480px;
+  }
+
+  .meters {
+    width: min(220px, 42vw);
+    padding: 8px;
+  }
+
+  .quest-panel {
+    width: min(280px, 34vw);
+    padding: 8px;
+  }
+
+  .quest-panel li {
+    font-size: 10px;
+  }
+
+  .inventory {
+    max-width: 46vw;
+    padding: 8px;
+    font-size: 11px;
   }
 }

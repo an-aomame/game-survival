@@ -40,7 +40,7 @@
     update: document.getElementById("updateButton")
   };
 
-  const APP_VERSION = "0.6.0";
+  const APP_VERSION = "0.6.1";
   const SPRITES = {
     player: loadSprite("assets/3days-shujimkou.png"),
     enemy: loadSprite("assets/3days-bakemono.png")
