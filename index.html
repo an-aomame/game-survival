@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
     <meta name="theme-color" content="#162019">
     <title>森の三日間</title>
-    <link rel="stylesheet" href="styles.css?v=0.4.0">
+    <link rel="stylesheet" href="styles.css?v=0.5.0">
   </head>
   <body>
     <main class="game-shell" aria-label="森のサバイバルゲーム">
@@ -40,12 +40,14 @@
           <span>石 <b id="stoneCount">0</b></span>
           <span>囲い <b id="wallCount">0</b>/3</span>
           <span>コイン <b id="coinCount">0</b></span>
+          <span>武器 <b id="weaponName">なし</b></span>
         </div>
         <div class="actions">
           <button id="gatherButton" type="button">採取</button>
           <button id="eatButton" type="button">食べる</button>
           <button id="fireButton" type="button">焚き火</button>
           <button id="wallButton" type="button">囲い</button>
+          <button id="attackButton" type="button">攻撃</button>
         </div>
       </section>
 
@@ -56,7 +58,7 @@
 
       <section id="messagePanel" class="message-panel" aria-live="polite">
         <h1>森の三日間</h1>
-        <p class="version-label" id="versionLabel">v0.4.0</p>
+        <p class="version-label" id="versionLabel">v0.5.0</p>
         <p id="messageText">10日目の夜明けまで生き残れ。</p>
         <div class="title-actions">
           <button id="startButton" type="button">始める</button>
@@ -92,6 +94,10 @@
               <p>木材で火を強くすると暖かい。石3個で囲いを作ると、敵よけの内側リングが広がるぞい。</p>
             </article>
             <article>
+              <h3>宝箱と武器</h3>
+              <p>森の宝箱を見つけたら近くで採取じゃ。斧・剣・銃のどれかが入り、攻撃で敵を倒せるぞい。</p>
+            </article>
+            <article>
               <h3>博士のコツ</h3>
               <p>昼はベリーを2つ以上、木材を2つ以上、石を3つ集めるのじゃ。夜は点線の中で火を守ると安心じゃ。</p>
             </article>
@@ -101,6 +107,6 @@
       </section>
     </main>
 
-    <script src="game.js?v=0.4.0"></script>
+    <script src="game.js?v=0.5.0"></script>
   </body>
 </html>

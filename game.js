@@ -15,11 +15,13 @@
     stones: document.getElementById("stoneCount"),
     wallCount: document.getElementById("wallCount"),
     coins: document.getElementById("coinCount"),
+    weapon: document.getElementById("weaponName"),
     quests: document.getElementById("questList"),
     gather: document.getElementById("gatherButton"),
     eat: document.getElementById("eatButton"),
     fire: document.getElementById("fireButton"),
     wall: document.getElementById("wallButton"),
+    attack: document.getElementById("attackButton"),
     panel: document.getElementById("messagePanel"),
     helpPanel: document.getElementById("helpPanel"),
     version: document.getElementById("versionLabel"),
@@ -31,7 +33,7 @@
     update: document.getElementById("updateButton")
   };
 
-  const APP_VERSION = "0.4.0";
+  const APP_VERSION = "0.5.0";
   const TAU = Math.PI * 2;
   const WORLD = { width: 1800, height: 1300 };
   const DAY_SECONDS = 76;
@@ -43,6 +45,11 @@
     { id: "stone", label: "石を5個集める", target: 5, reward: 10 },
     { id: "wall", label: "囲いを1回作る", target: 1, reward: 12 }
   ];
+  const WEAPONS = {
+    axe: { name: "斧", range: 78, cooldown: 0.7, color: "#b9c2bd" },
+    sword: { name: "剣", range: 112, cooldown: 0.55, color: "#d9e5df" },
+    gun: { name: "銃", range: 230, cooldown: 1.05, color: "#f0d46b" }
+  };
 
   let coins = loadCoins();
 
@@ -71,7 +78,9 @@
         wood: 1,
         berries: 1,
         stones: 0,
-        invulnerable: 0
+        invulnerable: 0,
+        weapon: null,
+        attackCooldown: 0
       },
       camp: {
         x: WORLD.width * 0.5 + 62,
@@ -80,6 +89,7 @@
         wallLevel: 0
       },
       resources: [],
+      chests: [],
       enemies: [],
       particles: [],
       questProgress: {
@@ -97,6 +107,7 @@
   function resetGame() {
     state = makeState();
     state.resources = createResources();
+    state.chests = createChests();
     state.enemies = [];
     lastTime = performance.now();
     running = true;
@@ -126,6 +137,21 @@
       }
     }
     return resources;
+  }
+
+  function createChests() {
+    const chests = [];
+    for (let i = 0; i < 7; i += 1) {
+      const p = randomOpenPoint(180);
+      chests.push({
+        x: p.x,
+        y: p.y,
+        r: 22,
+        opened: false,
+        weapon: ["axe", "sword", "gun"][Math.floor(Math.random() * 3)]
+      });
+    }
+    return chests;
   }
 
   function randomOpenPoint(pad) {
@@ -172,6 +198,7 @@
     p.food = clamp(p.food - dt * (isNight() ? 0.46 : 0.32), 0, 100);
 
     movePlayer(dt);
+    p.attackCooldown = Math.max(0, p.attackCooldown - dt);
     updateNeeds(dt);
     updateResources(dt);
     updateEnemies(dt);
@@ -289,6 +316,7 @@
       x: p.x,
       y: p.y,
       r: 19,
+      health: 1,
       speed: 74 + Math.random() * 18 + dayNumber() * 5,
       wobble: Math.random() * TAU
     });
@@ -299,6 +327,12 @@
       return;
     }
     const p = state.player;
+    const chest = nearestClosedChest();
+    if (chest) {
+      openChest(chest);
+      return;
+    }
+
     let closest = null;
     let best = 74;
     for (const item of state.resources) {
@@ -329,6 +363,59 @@
       addQuestProgress("stone", closest.amount);
     }
     burst(closest.x, closest.y, closest.type);
+  }
+
+  function nearestClosedChest() {
+    let closest = null;
+    let best = 82;
+    for (const chest of state.chests) {
+      const d = dist(state.player.x, state.player.y, chest.x, chest.y);
+      if (!chest.opened && d < best) {
+        closest = chest;
+        best = d;
+      }
+    }
+    return closest;
+  }
+
+  function openChest(chest) {
+    chest.opened = true;
+    state.player.weapon = chest.weapon;
+    const weapon = WEAPONS[chest.weapon];
+    state.message = `宝箱から${weapon.name}を手に入れた。`;
+    burst(chest.x, chest.y, "coin");
+  }
+
+  function attack() {
+    const p = state.player;
+    const weapon = WEAPONS[p.weapon];
+    if (!running || !weapon || p.attackCooldown > 0) {
+      state.message = !weapon ? "武器がない。宝箱を探そう。" : "まだ攻撃できない。";
+      return;
+    }
+
+    let targetIndex = -1;
+    let best = weapon.range;
+    for (let i = 0; i < state.enemies.length; i += 1) {
+      const e = state.enemies[i];
+      const d = dist(p.x, p.y, e.x, e.y);
+      if (d < best) {
+        targetIndex = i;
+        best = d;
+      }
+    }
+
+    p.attackCooldown = weapon.cooldown;
+    if (targetIndex < 0) {
+      state.message = `${weapon.name}が届く敵がいない。`;
+      burst(p.x, p.y, "attack");
+      return;
+    }
+
+    const target = state.enemies[targetIndex];
+    state.enemies.splice(targetIndex, 1);
+    state.message = `${weapon.name}で敵を倒した。`;
+    burst(target.x, target.y, "attack");
   }
 
   function eat() {
@@ -393,7 +480,7 @@
   }
 
   function burst(x, y, type) {
-    const color = type === "berries" ? "#d84f5f" : type === "stone" ? "#b9c2bd" : type === "fire" ? "#f6a23b" : "#d2a05b";
+    const color = type === "berries" ? "#d84f5f" : type === "stone" ? "#b9c2bd" : type === "fire" ? "#f6a23b" : type === "attack" ? "#f0d46b" : "#d2a05b";
     for (let i = 0; i < 10; i += 1) {
       const a = Math.random() * TAU;
       const speed = 24 + Math.random() * 58;
@@ -449,6 +536,7 @@
     }
     drawWorld(camera);
     drawResources(camera);
+    drawChests(camera);
     drawCamp(camera);
     drawEnemies(camera);
     drawPlayer(camera);
@@ -547,6 +635,23 @@
         ctx.ellipse(item.x, item.y, 15, 10, -0.2, 0, TAU);
         ctx.fill();
       }
+    }
+    ctx.restore();
+  }
+
+  function drawChests(camera) {
+    ctx.save();
+    ctx.translate(-camera.x, -camera.y);
+    for (const chest of state.chests) {
+      if (!isOnScreen(chest.x, chest.y, camera, 80)) {
+        continue;
+      }
+      ctx.fillStyle = chest.opened ? "#4c3a2a" : "#8e5b2f";
+      ctx.fillRect(chest.x - 18, chest.y - 13, 36, 26);
+      ctx.fillStyle = chest.opened ? "#6f5a43" : "#d8a145";
+      ctx.fillRect(chest.x - 18, chest.y - 17, 36, 8);
+      ctx.fillStyle = "#f1d37a";
+      ctx.fillRect(chest.x - 3, chest.y - 12, 6, 12);
     }
     ctx.restore();
   }
@@ -681,7 +786,30 @@
     ctx.arc(x - 6, y - 3, 2.5, 0, TAU);
     ctx.arc(x + 6, y - 3, 2.5, 0, TAU);
     ctx.fill();
+    drawHeldWeapon(x, y);
     ctx.restore();
+  }
+
+  function drawHeldWeapon(x, y) {
+    const weapon = WEAPONS[state.player.weapon];
+    if (!weapon) {
+      return;
+    }
+    ctx.strokeStyle = weapon.color;
+    ctx.lineWidth = 4;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    if (state.player.weapon === "gun") {
+      ctx.moveTo(x + 12, y + 2);
+      ctx.lineTo(x + 31, y - 3);
+    } else if (state.player.weapon === "sword") {
+      ctx.moveTo(x + 10, y + 6);
+      ctx.lineTo(x + 28, y - 18);
+    } else {
+      ctx.moveTo(x + 10, y + 6);
+      ctx.lineTo(x + 24, y - 8);
+    }
+    ctx.stroke();
   }
 
   function drawParticles(camera) {
@@ -722,10 +850,12 @@
     ui.stones.textContent = p.stones;
     ui.wallCount.textContent = state.camp.wallLevel;
     ui.coins.textContent = coins;
+    ui.weapon.textContent = p.weapon ? WEAPONS[p.weapon].name : "なし";
     updateQuestList();
     ui.eat.disabled = p.berries <= 0 || p.food >= 96 || !running;
     ui.fire.disabled = p.wood <= 0 || dist(p.x, p.y, state.camp.x, state.camp.y) >= 116 || !running;
     ui.wall.disabled = p.stones < 3 || state.camp.wallLevel >= 3 || dist(p.x, p.y, state.camp.x, state.camp.y) >= 136 || !running;
+    ui.attack.disabled = !p.weapon || p.attackCooldown > 0 || !running;
     ui.gather.disabled = !running;
   }
 
@@ -850,6 +980,7 @@
   ui.eat.addEventListener("click", eat);
   ui.fire.addEventListener("click", feedFire);
   ui.wall.addEventListener("click", buildWall);
+  ui.attack.addEventListener("click", attack);
   ui.start.addEventListener("click", resetGame);
   ui.help.addEventListener("click", openHelp);
   ui.titleHelp.addEventListener("click", openHelp);
@@ -859,5 +990,6 @@
   resize();
   ui.version.textContent = `v${APP_VERSION}`;
   state.resources = createResources();
+  state.chests = createChests();
   draw();
 }());
