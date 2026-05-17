@@ -33,7 +33,7 @@
     update: document.getElementById("updateButton")
   };
 
-  const APP_VERSION = "0.5.0";
+  const APP_VERSION = "0.5.1";
   const TAU = Math.PI * 2;
   const WORLD = { width: 1800, height: 1300 };
   const DAY_SECONDS = 76;
@@ -141,7 +141,7 @@
 
   function createChests() {
     const chests = [];
-    for (let i = 0; i < 7; i += 1) {
+    for (let i = 0; i < 3; i += 1) {
       const p = randomOpenPoint(180);
       chests.push({
         x: p.x,
