@@ -356,16 +356,12 @@ meter::-webkit-meter-bar {
 }
 
 .professor-face {
-  display: grid;
-  place-items: center;
   width: 58px;
   height: 58px;
   border: 2px solid rgba(255, 231, 170, 0.7);
   border-radius: 50%;
   background: #d57f35;
-  color: #15120e;
-  font-size: 23px;
-  font-weight: 900;
+  object-fit: cover;
 }
 
 .professor h2,

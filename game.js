@@ -33,7 +33,11 @@
     update: document.getElementById("updateButton")
   };
 
-  const APP_VERSION = "0.5.1";
+  const APP_VERSION = "0.5.2";
+  const SPRITES = {
+    player: loadSprite("assets/3days-shujimkou.png"),
+    enemy: loadSprite("assets/3days-bakemono.png")
+  };
   const TAU = Math.PI * 2;
   const WORLD = { width: 1800, height: 1300 };
   const DAY_SECONDS = 76;
@@ -152,6 +156,13 @@
       });
     }
     return chests;
+  }
+
+  function loadSprite(src) {
+    const image = new Image();
+    image.onload = () => draw();
+    image.src = src;
+    return image;
   }
 
   function randomOpenPoint(pad) {
@@ -751,6 +762,13 @@
     for (const e of state.enemies) {
       const x = e.x - camera.x;
       const y = e.y - camera.y;
+      ctx.fillStyle = "rgba(0, 0, 0, 0.24)";
+      ctx.beginPath();
+      ctx.ellipse(x, y + 18, 20, 8, 0, 0, TAU);
+      ctx.fill();
+      if (drawSprite(SPRITES.enemy, x, y, 58 + Math.sin(e.wobble * 7) * 3)) {
+        continue;
+      }
       ctx.fillStyle = "#121014";
       ctx.beginPath();
       ctx.arc(x, y, e.r + Math.sin(e.wobble * 7) * 2, 0, TAU);
@@ -771,8 +789,13 @@
     ctx.globalAlpha = p.invulnerable > 0 && Math.floor(p.invulnerable * 12) % 2 === 0 ? 0.45 : 1;
     ctx.fillStyle = "#2c3031";
     ctx.beginPath();
-    ctx.ellipse(x, y + 16, 18, 8, 0, 0, TAU);
+    ctx.ellipse(x, y + 22, 22, 8, 0, 0, TAU);
     ctx.fill();
+    if (drawSprite(SPRITES.player, x, y, 72)) {
+      drawHeldWeapon(x, y);
+      ctx.restore();
+      return;
+    }
     ctx.fillStyle = "#d8a05a";
     ctx.beginPath();
     ctx.arc(x, y, p.r, 0, TAU);
@@ -788,6 +811,14 @@
     ctx.fill();
     drawHeldWeapon(x, y);
     ctx.restore();
+  }
+
+  function drawSprite(image, x, y, size) {
+    if (!image.complete || image.naturalWidth <= 0) {
+      return false;
+    }
+    ctx.drawImage(image, x - size / 2, y - size / 2, size, size);
+    return true;
   }
 
   function drawHeldWeapon(x, y) {
